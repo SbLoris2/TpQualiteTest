@@ -34,3 +34,6 @@ La documentation Swagger est disponible sur : `http://localhost:3000/api-docs`
 - Tests unitaires : Jest
 - Tests E2E : Playwright
 - CI/CD : GitHub Actions
+
+
+Loris LEBRETON
