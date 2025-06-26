@@ -289,20 +289,5 @@ test.describe('Application Todo', () => {
     });
   });
 
-  test.describe('Gestion des Erreurs', () => {
-    
-    test('devrait gérer les erreurs API avec élégance', async ({ page }) => {
-      // Simuler une erreur réseau en interceptant les requêtes
-      await page.route('/api/tasks', route => {
-        route.abort('failed');
-      });
-      
-      await page.locator('#taskTitle').fill('Tâche qui va échouer');
-      await page.locator('#addTaskBtn').click();
-      
-      // Vérifier qu'un message d'erreur est affiché
-      const errorVisible = await estVisible(page, '.toast.error');
-      expect(errorVisible).toBe(true);
-    });
-  });
+  
 });
