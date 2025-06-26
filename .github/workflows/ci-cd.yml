@@ -1,0 +1,165 @@
+name: CI/CD Pipeline - JS/Node.js avec Jest & Playwright
+
+# Déclencheurs du workflow
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+# Variables d'environnement globales
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # Job pour les tests unitaires avec Jest
+  unit-tests:
+    name: Tests unitaires (Jest)
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Récupération du code
+    - name: Checkout du code
+      uses: actions/checkout@v4
+    
+    # Configuration de l'environnement Node.js
+    - name: Setup Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    # Installation des dépendances
+    - name: Installation des dépendances
+      run: npm ci
+    
+    # Vérification du linting (optionnel)
+    - name: Vérification du code (ESLint)
+      run: npm run lint
+      continue-on-error: true
+    
+    # Exécution des tests unitaires avec Jest
+    - name: Tests unitaires avec Jest
+      run: npm run test:unit
+    
+    # Génération du rapport de couverture
+    - name: Génération de la couverture de code
+      run: npm run test:coverage
+    
+    # Upload du rapport de couverture
+    - name: Upload de la couverture vers Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-unit-tests
+
+  # Job pour les tests E2E avec Playwright
+  e2e-tests:
+    name: Tests E2E (Playwright)
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    
+    steps:
+    # Récupération du code
+    - name: Checkout du code
+      uses: actions/checkout@v4
+    
+    # Configuration de l'environnement Node.js
+    - name: Setup Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    # Installation des dépendances
+    - name: Installation des dépendances
+      run: npm ci
+    
+    # Installation des navigateurs Playwright
+    - name: Installation des navigateurs Playwright
+      run: npx playwright install --with-deps
+    
+    # Démarrage de l'application en arrière-plan
+    - name: Démarrage de l'application
+      run: |
+        npm run start &
+        sleep 10
+      env:
+        CI: true
+    
+    # Exécution des tests E2E
+    - name: Tests E2E avec Playwright
+      run: npm run test:e2e
+    
+    # Upload des rapports Playwright en cas d'échec
+    - name: Upload des rapports Playwright
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+    
+    # Upload des screenshots/videos en cas d'échec
+    - name: Upload des artifacts de test
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: test-results
+        path: test-results/
+        retention-days: 30
+
+  # Job de build (après succès des tests)
+  build:
+    name: Build de l'application
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests]
+    
+    steps:
+    - name: Checkout du code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Installation des dépendances
+      run: npm ci
+    
+    - name: Build de l'application
+      run: npm run build
+    
+    # Sauvegarde des artifacts de build
+    - name: Upload des artifacts de build
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+        retention-days: 7
+
+  # Job de déploiement (conditionnel - branche main uniquement)
+  deploy:
+    name: Déploiement
+    runs-on: ubuntu-latest
+    needs: [unit-tests, e2e-tests, build]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout du code
+      uses: actions/checkout@v4
+    
+    - name: Téléchargement des artifacts de build
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: dist/
+    
+    # Exemple de déploiement (à adapter selon votre plateforme)
+    - name: Déploiement vers la production
+      run: |
+        echo "🚀 Déploiement vers l'environnement de production"
+        echo "Files to deploy:"
+        ls -la dist/
