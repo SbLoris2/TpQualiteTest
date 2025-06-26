@@ -147,21 +147,21 @@ jobs:
     
     # Sauvegarde des artifacts de build
     - name: Vérifie que le build a produit le dossier dist/
-  run: |
-    if [ -d "dist" ]; then
-      echo "✅ Le dossier dist/ existe"
-      ls -la dist/
-    else
-      echo "❌ Le dossier dist/ est manquant"
-      exit 1
-    fi
+      run: |
+        if [ -d "dist" ]; then
+          echo "✅ Le dossier dist/ existe"
+          ls -la dist/
+        else
+          echo "❌ Le dossier dist/ est manquant"
+          exit 1
+        fi
 
-    - name: Upload des artifacts de build
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-files
-        path: dist/
-        retention-days: 7
+        - name: Upload des artifacts de build
+          uses: actions/upload-artifact@v4
+          with:
+            name: build-files
+            path: dist/
+            retention-days: 7
 
   # Job de déploiement (conditionnel - branche main uniquement)
   deploy:
@@ -173,22 +173,21 @@ jobs:
     steps:
     - name: Checkout du code
       uses: actions/checkout@v4
-      
     - name: Vérification du contenu téléchargé
-  run: |
-    echo "📁 Contenu du dossier dist/ après téléchargement :"
-    ls -la dist/
-
-    - name: Téléchargement des artifacts de build
-      uses: actions/download-artifact@v4
-      with:
-        name: build-files
-        path: dist/
-    
-    # Exemple de déploiement (à adapter selon votre plateforme)
-    - name: Déploiement vers la production
       run: |
-        echo "🚀 Déploiement vers l'environnement de production"
-        echo "Files to deploy:"
+        echo "📁 Contenu du dossier dist/ après téléchargement :"
         ls -la dist/
-        # Ajoutez ici vos commandes de déploiement spécifiques
+
+        - name: Téléchargement des artifacts de build
+          uses: actions/download-artifact@v4
+          with:
+            name: build-files
+            path: dist/
+        
+        # Exemple de déploiement (à adapter selon votre plateforme)
+        - name: Déploiement vers la production
+          run: |
+            echo "🚀 Déploiement vers l'environnement de production"
+            echo "Files to deploy:"
+            ls -la dist/
+            # Ajoutez ici vos commandes de déploiement spécifiques
