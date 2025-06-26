@@ -3,8 +3,8 @@ module.exports = {
   testMatch: ['**/tests/unit/**/*.test.js'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
   collectCoverageFrom: [
-    'src/**/*.js',
-    '!src/app.js',
+   'src/**/*.js',
+    '!src/**/*.test.js',
     '!src/config/swagger.js'
   ],
   coverageDirectory: 'coverage',
