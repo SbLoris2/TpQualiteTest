@@ -7,7 +7,6 @@
     "start": "node src/app.js",
     "docs:watch": "nodemon --watch src --ext js --exec 'npm run docs'",
     "docs:serve": "npx http-server docs -p 8080 -o",
-  
     "dev": "nodemon src/app.js",
     "test": "jest",
     "test:unit": "jest tests/unit/",
@@ -18,7 +17,7 @@
     "test:e2e:ui": "playwright test --ui",
     "lint": "echo '✅ Linting passed - ESLint disabled'",
     "format": "prettier --write .",
-        "docs": "jsdoc -c jsdoc.conf.json"
+    "docs": "jsdoc -c jsdoc.conf.json"
   },
   "keywords": [
     "api",

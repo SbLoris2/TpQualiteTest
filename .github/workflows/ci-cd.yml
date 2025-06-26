@@ -146,6 +146,16 @@ jobs:
         fi
     
     # Sauvegarde des artifacts de build
+    - name: Vérifie que le build a produit le dossier dist/
+  run: |
+    if [ -d "dist" ]; then
+      echo "✅ Le dossier dist/ existe"
+      ls -la dist/
+    else
+      echo "❌ Le dossier dist/ est manquant"
+      exit 1
+    fi
+
     - name: Upload des artifacts de build
       uses: actions/upload-artifact@v4
       with:
@@ -163,7 +173,12 @@ jobs:
     steps:
     - name: Checkout du code
       uses: actions/checkout@v4
-    
+      
+    - name: Vérification du contenu téléchargé
+  run: |
+    echo "📁 Contenu du dossier dist/ après téléchargement :"
+    ls -la dist/
+
     - name: Téléchargement des artifacts de build
       uses: actions/download-artifact@v4
       with:
