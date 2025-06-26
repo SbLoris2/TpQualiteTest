@@ -1,31 +1,26 @@
 const { defineConfig, devices } = require('@playwright/test');
 
-module.exports = defineConfig({
+module.exports = {
   testDir: './tests/e2e',
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
-use: {
-  baseURL: 'http://localhost:3000',
-  trace: 'on-first-retry',
-  screenshot: 'only-on-failure',
-  video: 'retain-on-failure',
-  actionTimeout: 10000,
-  navigationTimeout: 30000,
-  // Isolation des tests
-  storageState: { cookies: [], origins: [] },
-},
+  timeout: 30000,
+  expect: {
+    timeout: 5000
+  },
+  use: {
+    baseURL: 'http://localhost:3000',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure'
+  },
+  webServer: {
+    command: 'npm start',
+    port: 3000,
+    reuseExistingServer: !process.env.CI, // En local, réutilise le serveur existant
+    timeout: 120000
+  },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-  ],
-  webServer: {
-    command: 'npm start',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-  },
-});
+      use: { ...devices['Desktop Chrome'] }
+    }
+  ]
+};

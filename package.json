@@ -5,20 +5,20 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
+    "docs:watch": "nodemon --watch src --ext js --exec 'npm run docs'",
+    "docs:serve": "npx http-server docs -p 8080 -o",
+  
     "dev": "nodemon src/app.js",
     "test": "jest",
-        "test:unit": "jest tests/unit/",
-            "test:coverage": "jest tests/unit/ --coverage",
-                "build": "echo 'Build completed - no build step needed for this project'",
-
-
-
+    "test:unit": "jest tests/unit/",
+    "test:coverage": "jest tests/unit/ --coverage",
+    "build": "echo 'Build completed - no build step needed for this project'",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-        "lint": "echo '✅ Linting passed - ESLint disabled'",
+    "lint": "echo '✅ Linting passed - ESLint disabled'",
     "format": "prettier --write .",
-    "docs": "node src/app.js"
+        "docs": "jsdoc -c jsdoc.conf.json"
   },
   "keywords": [
     "api",
@@ -33,6 +33,7 @@
     "@playwright/test": "^1.53.1",
     "eslint": "^9.29.0",
     "jest": "^30.0.3",
+    "jsdoc": "^4.0.4",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.1",
     "supertest": "^7.1.1"

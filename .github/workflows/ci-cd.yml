@@ -92,17 +92,11 @@ jobs:
     - name: Installation des navigateurs Playwright
       run: npx playwright install --with-deps
     
-    # Démarrage de l'application en arrière-plan
-    - name: Démarrage de l'application
-      run: |
-        npm run start &
-        sleep 10
-      env:
-        CI: true
-    
-    # Exécution des tests E2E
+    # Exécution des tests E2E (Playwright démarre automatiquement le serveur)
     - name: Tests E2E avec Playwright
       run: npm run test:e2e
+      env:
+        CI: true
     
     # Upload des rapports Playwright en cas d'échec
     - name: Upload des rapports Playwright
