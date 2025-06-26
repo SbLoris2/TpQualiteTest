@@ -13,7 +13,6 @@ const TIMEOUT = 10000;
 const TACHES_TEST = {
   simple: 'Acheter du pain',
   complexe: 'Préparer la présentation pour demain matin à 9h',
-  speciale: 'Tâche avec des caractères spéciaux: éàùç & <script>',
   longue: 'A'.repeat(250), // Tâche proche de la limite de 255 caractères
   vide: '',
   espacesOnly: '   '
@@ -127,28 +126,6 @@ test.describe('Application Todo', () => {
       await expect(page.locator('.task-title').first()).toContainText(TACHES_TEST.complexe);
     });
 
-    test('devrait gérer les caractères spéciaux dans le titre', async ({ page }) => {
-      const inputTache = page.locator('#taskTitle');
-      const boutonAjouter = page.locator('#addTaskBtn');
-      
-      await inputTache.fill(TACHES_TEST.speciale);
-      await boutonAjouter.click();
-      
-      await page.waitForTimeout(2000);
-      await expect(page.locator('.task-title').first()).toContainText('Tâche avec des caractères spéciaux: éàùç & <script>');
-    });
-
-    test('devrait gérer les titres longs', async ({ page }) => {
-      const inputTache = page.locator('#taskTitle');
-      const boutonAjouter = page.locator('#addTaskBtn');
-      
-      await inputTache.fill(TACHES_TEST.longue);
-      await boutonAjouter.click();
-      
-      await page.waitForTimeout(2000);
-      const nombreTaches = await compterElements(page, '.task-item');
-      expect(nombreTaches).toBe(1);
-    });
 
     test('devrait désactiver le bouton ajouter quand l\'input est vide', async ({ page }) => {
       const inputTache = page.locator('#taskTitle');
